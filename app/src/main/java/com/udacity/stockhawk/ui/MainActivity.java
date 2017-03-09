@@ -1,6 +1,7 @@
 package com.udacity.stockhawk.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -46,7 +47,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onClick(String symbol) {
-        Timber.d("Symbol clicked: %s", symbol);
+        Intent intent = new Intent(this, StockDetailActivity.class);
+        intent.putExtra("SYMBOL", symbol);
+
+        startActivity(intent);
     }
 
     @Override
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     /**
      * Check if the internet connection is up
+     *
      * @return true if there is internet connection, false otherwise
      */
     private boolean networkUp() {
@@ -119,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     /**
      * Shows the dialog to add a new stock
+     *
      * @param view
      */
     public void button(@SuppressWarnings("UnusedParameters") View view) {
