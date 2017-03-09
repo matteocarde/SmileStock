@@ -21,13 +21,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.udacity.stockhawk.R;
+import com.udacity.stockhawk.adapters.StockAdapter;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener,

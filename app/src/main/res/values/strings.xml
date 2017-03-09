@@ -31,5 +31,17 @@
 
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
+    <string name="currency_property">Currency</string>
+    <string name="stock_exchange_property">Stock Exchange</string>
+    <string name="ask_property">Ask</string>
+    <string name="bid_property">Bid</string>
+    <string name="price_property">Price</string>
+    <string name="prev_close_propery">Previusly Closed</string>
+    <string name="eps_property">EPS</string>
+    <string name="pe_property">PE</string>
+    <string name="peg_property">PEG</string>
+    <string name="divident_paydate_property">Dividend Paydate</string>
+    <string name="annual_yield_property">Annual Yield</string>
+    <string name="not_available">N/A</string>
 
 </resources>

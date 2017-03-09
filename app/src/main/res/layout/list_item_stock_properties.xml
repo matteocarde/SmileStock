@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/stock_properties_top_bottom_padding"
+    android:paddingEnd="@dimen/stock_properties_left_right_padding"
+    android:paddingLeft="@dimen/stock_properties_left_right_padding"
+    android:paddingRight="@dimen/stock_properties_left_right_padding"
+    android:paddingStart="@dimen/stock_properties_left_right_padding">
+
+    <TextView
+        android:id="@+id/stock_property_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Value" />
+
+    <TextView
+        android:id="@+id/stock_property_key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Key" />
+</android.support.constraint.ConstraintLayout>

@@ -1,3 +1,5 @@
 <resources>
     <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="stock_properties_left_right_padding">16dp</dimen>
+    <dimen name="stock_properties_top_bottom_padding">8dp</dimen>
 </resources>
