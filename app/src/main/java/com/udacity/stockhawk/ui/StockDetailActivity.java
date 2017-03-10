@@ -99,7 +99,7 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
             return;
         }
 
-        stockSymbol.setText(mData.getName() + " (" + mSymbol + ")");
+        stockSymbol.setText(mData.getName());
 
         try {
             updateGraph(mData.getHistory());
@@ -116,14 +116,8 @@ public class StockDetailActivity extends AppCompatActivity implements LoaderMana
 
 
     private void updateGraph(List<HistoricalQuote> history) throws IOException {
-        List<Entry> entries = new ArrayList<>();
 
-        Timber.d("History count: %s", "" + history.size());
-        int i = 0;
-        for (HistoricalQuote quote : history) {
-            //I have to use i because for some reason it doesn't ac
-            entries.add(new Entry(i++, quote.getClose().floatValue()));
-        }
+        List<Entry> entries = StocksUtils.prepareGraphData(history);
 
         LineDataSet dataSet = new LineDataSet(entries, "Valori");
         dataSet.setLineWidth(2f);

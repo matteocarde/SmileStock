@@ -3,20 +3,35 @@ package com.udacity.stockhawk.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import au.com.bytecode.opencsv.CSVReader;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -28,6 +43,9 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
     private final DecimalFormat percentageFormat;
     private Cursor cursor;
     private final StockAdapterOnClickHandler clickHandler;
+
+    private final static int FAVOURITE_VIEW_TYPE = 1;
+    private final static int NORMAL_VIEW_TYPE = 2;
 
     public StockAdapter(Context context, StockAdapterOnClickHandler clickHandler) {
         this.context = context;
@@ -56,9 +74,14 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
     @Override
     public StockViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View item = LayoutInflater.from(context).inflate(R.layout.list_item_quote, parent, false);
+        View item;
+        if (viewType == FAVOURITE_VIEW_TYPE) {
+            item = LayoutInflater.from(context).inflate(R.layout.list_item_favourite_quote, parent, false);
+        } else {
+            item = LayoutInflater.from(context).inflate(R.layout.list_item_quote, parent, false);
+        }
 
-        return new StockViewHolder(item);
+        return new StockViewHolder(item, viewType);
     }
 
     @Override
@@ -66,6 +89,25 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
 
         cursor.moveToPosition(position);
 
+        if (holder.getItemViewType() == FAVOURITE_VIEW_TYPE) {
+            String history = cursor.getString(Contract.Quote.POSITION_HISTORY);
+
+            try {
+                displayDataInChart(holder.chart, history);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (position == 1) {
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            float d = context.getResources().getDisplayMetrics().density;
+            int margins = (int) (8 * d);
+            layoutParams.setMargins(margins, margins, margins, 0);
+            holder.quoteCard.setLayoutParams(layoutParams);
+        }
 
         holder.symbol.setText(cursor.getString(Contract.Quote.POSITION_SYMBOL));
         holder.price.setText(dollarFormat.format(cursor.getFloat(Contract.Quote.POSITION_PRICE)));
@@ -93,6 +135,61 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
 
     }
 
+    private void displayDataInChart(LineChart chart, String history) throws IOException {
+        List<Entry> entries = new ArrayList<>();
+
+        CSVReader csv = new CSVReader(new StringReader(history));
+
+        String[] row = csv.readNext();
+        int i = 0;
+        while (row != null) {
+            //I have to use i because for some reason it doesn't ac
+            entries.add(new Entry(i++, Float.parseFloat(row[1])));
+
+            row = csv.readNext();
+        }
+
+        LineDataSet dataSet = new LineDataSet(entries, "");
+        dataSet.setLineWidth(2f);
+        dataSet.setDrawCircles(false);
+
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+        dataSets.add(dataSet);
+        LineData lineData = new LineData(dataSets);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setLabelCount(3, true);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(false);
+        xAxis.setAvoidFirstLastClipping(true);
+
+
+        YAxis axisLeft = chart.getAxisLeft();
+        axisLeft.setDrawTopYLabelEntry(true);
+        axisLeft.setSpaceBottom(0);
+        axisLeft.setSpaceTop(0);
+        axisLeft.setLabelCount(3, true);
+        axisLeft.setTextColor(Color.WHITE);
+        axisLeft.setDrawAxisLine(false);
+        axisLeft.setDrawGridLines(false);
+        axisLeft.setDrawZeroLine(false);
+
+        chart.getAxisRight().setEnabled(false);
+        chart.getLegend().setEnabled(false);
+        chart.getDescription().setEnabled(false);
+        chart.setTouchEnabled(false);
+
+        chart.setData(lineData);
+        chart.invalidate();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position == 0 ? FAVOURITE_VIEW_TYPE : NORMAL_VIEW_TYPE;
+    }
+
     @Override
     public int getItemCount() {
         int count = 0;
@@ -118,9 +215,20 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
         @BindView(R.id.change)
         TextView change;
 
-        StockViewHolder(View itemView) {
+        @BindView(R.id.list_item_quote_card)
+        CardView quoteCard;
+
+        public LineChart chart;
+
+        StockViewHolder(View itemView, int viewType) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            chart = null;
+            if (viewType == FAVOURITE_VIEW_TYPE) {
+                chart = (LineChart) itemView.findViewById(R.id.preferred_item_chart);
+            }
+
             itemView.setOnClickListener(this);
         }
 

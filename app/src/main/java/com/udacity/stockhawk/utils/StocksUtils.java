@@ -1,14 +1,27 @@
 package com.udacity.stockhawk.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.udacity.stockhawk.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import timber.log.Timber;
 import yahoofinance.Stock;
+import yahoofinance.histquotes.HistoricalQuote;
 
 /**
  * Created by carde on 09/03/17.
@@ -45,10 +58,6 @@ public class StocksUtils {
                 .put("value", stock.getQuote().getPrice())
         );
 
-        array.put(new JSONObject()
-                .put("key", context.getString(R.string.prev_close_propery))
-                .put("value", stock.getQuote().getPreviousClose())
-        );
 
         array.put(new JSONObject()
                 .put("key", context.getString(R.string.eps_property))
@@ -71,5 +80,18 @@ public class StocksUtils {
 
         return array;
     }
+
+    public static List<Entry> prepareGraphData(List<HistoricalQuote> history) {
+        List<Entry> entries = new ArrayList<>();
+
+        int i = 0;
+        for (HistoricalQuote quote : history) {
+            //I have to use i because for some reason it doesn't ac
+            entries.add(new Entry(i++, quote.getClose().floatValue()));
+        }
+
+        return entries;
+    }
+
 
 }

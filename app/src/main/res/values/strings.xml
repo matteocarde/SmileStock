@@ -36,7 +36,7 @@
     <string name="ask_property">Ask</string>
     <string name="bid_property">Bid</string>
     <string name="price_property">Price</string>
-    <string name="prev_close_propery">Previusly Closed</string>
+    <string name="prev_close_propery">Previously Closed</string>
     <string name="eps_property">EPS</string>
     <string name="pe_property">PE</string>
     <string name="peg_property">PEG</string>
