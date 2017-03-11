@@ -48,5 +48,10 @@
 
 
     <string name="update_widget_action" translatable="false">com.udacity.stockhawk.ACTION_DATA_UPDATED</string>
+    <string name="stock_not_found_error">The stock symbol was not found</string>
+    <string name="loading_stock_message">Loading stock...</string>
+    <string name="add_new_stock">Add new stock</string>
+    <string name="dollar_mode_on">Dollar mode On</string>
+    <string name="percentage_mode_on">Percentage mode ON</string>
 
 </resources>

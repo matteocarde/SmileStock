@@ -143,7 +143,6 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
         String[] row = csv.readNext();
         int i = 0;
         while (row != null) {
-            //I have to use i because for some reason it doesn't ac
             entries.add(new Entry(i++, Float.parseFloat(row[1])));
 
             row = csv.readNext();
