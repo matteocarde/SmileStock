@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -44,7 +45,7 @@ import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 
-public class StockDetailFragment extends Fragment  implements LoaderManager.LoaderCallbacks {
+public class StockDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks {
 
     String mSymbol;
     String TAG;
@@ -59,6 +60,12 @@ public class StockDetailFragment extends Fragment  implements LoaderManager.Load
     @BindView(R.id.stock_detail_recyclerview)
     RecyclerView recyclerView;
 
+    @BindView(R.id.stock_detail_container)
+    ConstraintLayout detailContainer;
+
+    @BindView(R.id.select_stock_from_list_message)
+    TextView selectStockMessage;
+
     private static final int LOADER_ID = 291;
     private StockPropertiesAdapter mAdapter;
 
@@ -72,20 +79,23 @@ public class StockDetailFragment extends Fragment  implements LoaderManager.Load
         ButterKnife.bind(this, view);
 
 
-        mSymbol = getArguments().getString("SYMBOL");
-        if(mSymbol == null){
-            //TODO: Show an error
+        if (getArguments() != null && getArguments().getString("SYMBOL") != null) {
+            mSymbol = getArguments().getString("SYMBOL");
+
+            Timber.d("onCreateView " + mSymbol);
+            stockSymbol.setText(mSymbol);
+
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+
+            mAdapter = new StockPropertiesAdapter(getActivity(), null);
+
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setAdapter(mAdapter);
+            getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+        } else {
+            detailContainer.setVisibility(View.INVISIBLE);
+            selectStockMessage.setVisibility(View.VISIBLE);
         }
-
-        stockSymbol.setText(mSymbol);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-
-        mAdapter = new StockPropertiesAdapter(getActivity(), null);
-
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(mAdapter);
-        getActivity().getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 
         return view;
     }

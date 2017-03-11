@@ -1,5 +1,6 @@
 package com.udacity.stockhawk.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.udacity.stockhawk.utils.GeneralUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class StockListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         SwipeRefreshLayout.OnRefreshListener,
@@ -44,9 +46,19 @@ public class StockListFragment extends Fragment implements LoaderManager.LoaderC
     TextView error;
     public StockAdapter adapter;
 
+    OnStockClickHandler mClickHandler;
+
+    private boolean isDualView;
+
+    interface OnStockClickHandler{
+        public void onStockClick(String symbol);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        isDualView = getResources().getBoolean(R.bool.is_dual_pane);
 
         View view = inflater.inflate(R.layout.fragment_stocks_list, container, false);
         ButterKnife.bind(this, view);
@@ -81,11 +93,20 @@ public class StockListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public void onClick(String symbol) {
-        Intent intent = new Intent(getActivity(), StockDetailActivity.class);
-        intent.putExtra("SYMBOL", symbol);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        startActivity(intent);
+        try {
+            mClickHandler = (OnStockClickHandler) getActivity();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnStockClickHandler");
+        }
+    }
+
+    @Override
+    public void onClick(String symbol) {
+        Timber.d("Fragment onClick " + symbol);
+        mClickHandler.onStockClick(symbol);
     }
 
     @Override

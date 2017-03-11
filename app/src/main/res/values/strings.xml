@@ -53,5 +53,6 @@
     <string name="add_new_stock">Add new stock</string>
     <string name="dollar_mode_on">Dollar mode On</string>
     <string name="percentage_mode_on">Percentage mode ON</string>
+    <string name="select_stock_from_list">Select a stock from the list on the right to view more data.</string>
 
 </resources>

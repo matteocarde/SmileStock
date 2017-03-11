@@ -34,6 +34,7 @@ import java.util.Locale;
 import au.com.bytecode.opencsv.CSVReader;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
@@ -237,6 +238,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
             cursor.moveToPosition(adapterPosition);
             int symbolColumn = cursor.getColumnIndex(Contract.Quote.COLUMN_SYMBOL);
             clickHandler.onClick(cursor.getString(symbolColumn));
+            Timber.d("Adapter onClick " + cursor.getString(symbolColumn));
 
         }
 

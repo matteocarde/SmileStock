@@ -1,8 +1,10 @@
 package com.udacity.stockhawk.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,15 +12,21 @@ import android.view.MenuItem;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.PrefUtils;
 
-public class MainActivity extends AppCompatActivity {
+import timber.log.Timber;
+
+public class MainActivity extends AppCompatActivity implements StockListFragment.OnStockClickHandler {
 
     StockListFragment mListFragment;
+    StockDetailFragment mDetailFragment;
+    boolean isDualView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        isDualView = getResources().getBoolean(R.bool.is_dual_pane);
+
 
         mListFragment = new StockListFragment();
 
@@ -26,6 +34,15 @@ public class MainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .add(R.id.stock_list_fragment, mListFragment)
                 .commit();
+
+        if (isDualView) {
+            mDetailFragment = new StockDetailFragment();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.stock_detail_tablet_fragment, mDetailFragment)
+                    .commit();
+        }
     }
 
     private void setDisplayModeMenuItemIcon(MenuItem item) {
@@ -58,5 +75,29 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStockClick(String symbol) {
+        if (!isDualView) {
+            Intent intent = new Intent(this, StockDetailActivity.class);
+            intent.putExtra("SYMBOL", symbol);
+
+            startActivity(intent);
+        } else {
+            Timber.d("onStockClick " + symbol);
+            StockDetailFragment newFragment = new StockDetailFragment();
+
+            Bundle args = new Bundle();
+            args.putString("SYMBOL", symbol);
+            newFragment.setArguments(args);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.stock_detail_tablet_fragment, newFragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
+        }
     }
 }
