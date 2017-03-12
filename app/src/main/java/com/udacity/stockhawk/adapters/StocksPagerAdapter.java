@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.ui.StockDetailFragment;
 
 /**
@@ -30,6 +29,7 @@ public class StocksPagerAdapter extends FragmentStatePagerAdapter {
 
         Bundle args = new Bundle();
         args.putString("SYMBOL", stocks[position]);
+        args.putInt("POSITION", position);
 
         fragment.setArguments(args);
 

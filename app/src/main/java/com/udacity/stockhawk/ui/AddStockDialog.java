@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.udacity.stockhawk.R;
+import com.udacity.stockhawk.utils.GeneralUtils;
 
 import java.io.IOException;
 
@@ -140,7 +141,8 @@ public class AddStockDialog extends DialogFragment implements LoaderManager.Load
 
             addStock(stock.getSymbol());
         } catch (Exception e) {
-            Toast.makeText(context, context.getString(R.string.stock_not_found_error), Toast.LENGTH_LONG).show();
+            String text = GeneralUtils.isNetworkUp(getActivity()) ? context.getString(R.string.stock_not_found_error) : context.getString(R.string.no_internet_connection);
+            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
         }
     }
 

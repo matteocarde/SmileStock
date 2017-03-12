@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Stock Hawk</string>
+    <string name="app_name" translatable="false">SmileStocks</string>
 
     <string name="pref_stocks_initialized_key" translatable="false">initialized</string>
 
@@ -54,5 +54,7 @@
     <string name="dollar_mode_on">Dollar mode On</string>
     <string name="percentage_mode_on">Percentage mode ON</string>
     <string name="select_stock_from_list">Select a stock from the list on the right to view more data.</string>
+    <string name="no_data_available">No Data Available</string>
+    <string name="no_internet_connection">No internet connection.</string>
 
 </resources>

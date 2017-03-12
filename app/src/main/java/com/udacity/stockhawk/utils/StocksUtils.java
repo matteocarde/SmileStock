@@ -31,15 +31,14 @@ public class StocksUtils {
 
     public static JSONArray getStockProperties(Context context, Stock stock) throws JSONException {
         JSONArray array = new JSONArray();
-        DecimalFormat dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
 
         //Here I fetch some data just to make the UI prettier but I've no idea of what these numbers are :D
         array.put(createPropriety(context, context.getString(R.string.currency_property), stock.getCurrency()));
         array.put(createPropriety(context, context.getString(R.string.stock_exchange_property), stock.getStockExchange()));
-        array.put(createPropriety(context, context.getString(R.string.ask_property), dollarFormat.format(stock.getQuote().getAsk())));
-        array.put(createPropriety(context, context.getString(R.string.bid_property), dollarFormat.format(stock.getQuote().getBid())));
-        array.put(createPropriety(context, context.getString(R.string.price_property), dollarFormat.format(stock.getQuote().getPrice())));
-        array.put(createPropriety(context, context.getString(R.string.eps_property), dollarFormat.format(stock.getStats().getEps())));
+        array.put(createPropriety(context, context.getString(R.string.ask_property), dollarFormat(context, stock.getQuote().getAsk())));
+        array.put(createPropriety(context, context.getString(R.string.bid_property), dollarFormat(context, stock.getQuote().getBid())));
+        array.put(createPropriety(context, context.getString(R.string.price_property), dollarFormat(context, stock.getQuote().getPrice())));
+        array.put(createPropriety(context, context.getString(R.string.eps_property), dollarFormat(context, stock.getStats().getEps())));
         array.put(createPropriety(context, context.getString(R.string.pe_property), stock.getStats().getPe()));
         array.put(createPropriety(context, context.getString(R.string.peg_property), stock.getStats().getPeg()));
         array.put(createPropriety(context, context.getString(R.string.annual_yield_property), stock.getDividend().getAnnualYield()));
@@ -47,6 +46,12 @@ public class StocksUtils {
         return array;
     }
 
+    private static String dollarFormat(Context context, BigDecimal value) {
+
+        DecimalFormat dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
+
+        return value == null ? context.getString(R.string.not_available) : dollarFormat.format(value);
+    }
 
     private static JSONObject createPropriety(Context context, String key, BigDecimal value) throws JSONException {
         String fValue = value == null ? context.getString(R.string.not_available) : value.toString();

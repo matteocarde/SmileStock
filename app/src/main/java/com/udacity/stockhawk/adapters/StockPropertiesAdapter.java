@@ -42,7 +42,6 @@ public class StockPropertiesAdapter extends RecyclerView.Adapter<StockProperties
                 JSONObject property = mProperties.getJSONObject(position);
                 holder.bindProperty(property);
             } catch (Exception e) {
-                //TODO: Show error
                 e.printStackTrace();
             }
         }

@@ -16,7 +16,6 @@ import com.udacity.stockhawk.data.PrefUtils;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
 import com.udacity.stockhawk.utils.GeneralUtils;
 
-import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements StockListFragment.OnStockClickHandler {
 

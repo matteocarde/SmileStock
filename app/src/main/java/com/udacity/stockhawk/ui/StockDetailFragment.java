@@ -9,6 +9,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -25,9 +27,11 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.Utils;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.adapters.StockPropertiesAdapter;
 import com.udacity.stockhawk.data.Contract;
+import com.udacity.stockhawk.utils.GeneralUtils;
 import com.udacity.stockhawk.utils.StocksUtils;
 
 import org.json.JSONArray;
@@ -66,8 +70,18 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
     @BindView(R.id.select_stock_from_list_message)
     TextView selectStockMessage;
 
+    @BindView(R.id.chart_loader)
+    ProgressBar chartLoader;
+
+    @BindView(R.id.stock_list_loader)
+    ProgressBar stockListLoader;
+
     private static final int LOADER_ID = 291;
     private StockPropertiesAdapter mAdapter;
+    private int mPositon;
+    private boolean isDualPane;
+
+    private static final String NO_INTERNET_CONNECTION_ERROR = "NO_INTERNET_CONNECTION_ERROR";
 
     @Nullable
     @Override
@@ -78,9 +92,12 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
 
         ButterKnife.bind(this, view);
 
+        isDualPane = getResources().getBoolean(R.bool.is_dual_pane);
+
 
         if (getArguments() != null && getArguments().getString("SYMBOL") != null) {
             mSymbol = getArguments().getString("SYMBOL");
+            mPositon = getArguments().getInt("POSITION", 0);
 
             Timber.d("onCreateView " + mSymbol);
             stockSymbol.setText(mSymbol);
@@ -91,7 +108,10 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
 
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(mAdapter);
-            getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+
+            historyChart.setNoDataText("");
+            showLoaders();
+            getActivity().getSupportLoaderManager().restartLoader(LOADER_ID + mPositon, null, this);
         } else {
             detailContainer.setVisibility(View.INVISIBLE);
             selectStockMessage.setVisibility(View.VISIBLE);
@@ -100,11 +120,21 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
         return view;
     }
 
+    private void showLoaders() {
+        chartLoader.setVisibility(View.VISIBLE);
+        stockListLoader.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoaders() {
+        chartLoader.setVisibility(View.INVISIBLE);
+        stockListLoader.setVisibility(View.INVISIBLE);
+    }
 
     private void bindData() {
         if (mData == null) {
             Timber.e("Data is not available");
-            //TODO: Show error
+            hideLoaders();
+            historyChart.setNoDataText(getString(R.string.no_data_available));
             return;
         }
 
@@ -116,9 +146,8 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
             JSONArray properties = StocksUtils.getStockProperties(getActivity(), mData);
             Timber.d(properties.toString());
             mAdapter.refreshData(properties);
-
+            hideLoaders();
         } catch (Exception e) {
-            //TODO: Catch error
             e.printStackTrace();
         }
     }
@@ -131,6 +160,7 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
         LineDataSet dataSet = new LineDataSet(entries, "");
         dataSet.setLineWidth(2f);
         dataSet.setDrawCircles(false);
+        dataSet.setColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryLight));
 
         ArrayList<ILineDataSet> dataSets = new ArrayList<>();
         dataSets.add(dataSet);
@@ -154,12 +184,13 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
         axisLeft.setTextColor(Color.WHITE);
         axisLeft.setDrawGridLines(false);
         axisLeft.setDrawZeroLine(false);
-        axisLeft.setZeroLineColor(Color.RED);
 
         historyChart.getAxisRight().setEnabled(false);
         historyChart.getLegend().setEnabled(false);
         historyChart.getDescription().setEnabled(false);
-        historyChart.animateX(1000);
+        if (isDualPane) {
+            historyChart.animateX(1000);
+        }
 
         historyChart.setData(lineData);
         historyChart.invalidate();
@@ -178,8 +209,10 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
 
             @Override
             public Object loadInBackground() {
+                if (!GeneralUtils.isNetworkUp(getActivity())) {
+                    return NO_INTERNET_CONNECTION_ERROR;
+                }
                 try {
-
                     Calendar from = Calendar.getInstance();
                     Calendar to = Calendar.getInstance();
                     //Get stocks from two years ago
@@ -199,6 +232,11 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader loader, Object data) {
+        if(data == NO_INTERNET_CONNECTION_ERROR){
+            hideLoaders();
+            historyChart.setNoDataText(getString(R.string.no_internet_connection));
+            return;
+        }
         mData = (Stock) data;
         bindData();
     }
