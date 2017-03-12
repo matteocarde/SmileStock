@@ -130,31 +130,6 @@ public class StockListFragment extends Fragment implements LoaderManager.LoaderC
         }
     }
 
-
-    /**
-     * Shows the dialog to add a new stock
-     *
-     * @param view
-     */
-    public void button(@SuppressWarnings("UnusedParameters") View view) {
-        new AddStockDialog().show(getActivity().getSupportFragmentManager(), "StockDialogFragment");
-    }
-
-    public void addStock(String symbol) {
-        if (symbol != null && !symbol.isEmpty()) {
-
-            if (GeneralUtils.isNetworkUp(getActivity())) {
-                swipeRefreshLayout.setRefreshing(true);
-            } else {
-                String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
-                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-            }
-
-            PrefUtils.addStock(getActivity(), symbol);
-            QuoteSyncJob.syncImmediately(getActivity());
-        }
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(),

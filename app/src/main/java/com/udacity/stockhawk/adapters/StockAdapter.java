@@ -45,12 +45,17 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
     private Cursor cursor;
     private final StockAdapterOnClickHandler clickHandler;
 
+    private boolean isDualPane;
+
     private final static int FAVOURITE_VIEW_TYPE = 1;
     private final static int NORMAL_VIEW_TYPE = 2;
 
     public StockAdapter(Context context, StockAdapterOnClickHandler clickHandler) {
         this.context = context;
         this.clickHandler = clickHandler;
+
+        isDualPane = context.getResources().getBoolean(R.bool.is_dual_pane);
+
 
         dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
         dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
@@ -100,7 +105,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
             }
         }
 
-        if (position == 1) {
+        if (position == 1 && !isDualPane) {
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -187,7 +192,7 @@ public class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHol
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? FAVOURITE_VIEW_TYPE : NORMAL_VIEW_TYPE;
+        return position == 0 && !isDualPane ? FAVOURITE_VIEW_TYPE : NORMAL_VIEW_TYPE;
     }
 
     @Override

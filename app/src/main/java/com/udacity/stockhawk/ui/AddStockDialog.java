@@ -91,9 +91,9 @@ public class AddStockDialog extends DialogFragment implements LoaderManager.Load
     }
 
     private void addStock(String stockName) {
-        Fragment parent = getParentFragment();
-        if (parent instanceof StockListFragment) {
-            ((StockListFragment) parent).addStock(stockName);
+        Activity parent = getActivity();
+        if (parent instanceof MainActivity) {
+            ((MainActivity) parent).addStock(stockName);
         }
         dismissAllowingStateLoss();
     }

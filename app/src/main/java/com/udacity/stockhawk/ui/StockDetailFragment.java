@@ -61,7 +61,7 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
     RecyclerView recyclerView;
 
     @BindView(R.id.stock_detail_container)
-    ConstraintLayout detailContainer;
+    View detailContainer;
 
     @BindView(R.id.select_stock_from_list_message)
     TextView selectStockMessage;

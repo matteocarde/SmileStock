@@ -8,9 +8,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.sync.QuoteSyncJob;
+import com.udacity.stockhawk.utils.GeneralUtils;
 
 import timber.log.Timber;
 
@@ -75,6 +79,31 @@ public class MainActivity extends AppCompatActivity implements StockListFragment
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /**
+     * Shows the dialog to add a new stock
+     *
+     * @param view
+     */
+    public void button(@SuppressWarnings("UnusedParameters") View view) {
+        new AddStockDialog().show(getSupportFragmentManager(), "StockDialogFragment");
+    }
+
+    public void addStock(String symbol) {
+        if (symbol != null && !symbol.isEmpty()) {
+
+            if (GeneralUtils.isNetworkUp(this)) {
+                mListFragment.swipeRefreshLayout.setRefreshing(true);
+            } else {
+                String message = getString(R.string.toast_stock_added_no_connectivity, symbol);
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }
+
+            PrefUtils.addStock(this, symbol);
+            QuoteSyncJob.syncImmediately(this);
+        }
     }
 
     @Override

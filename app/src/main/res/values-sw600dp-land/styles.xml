@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="QuoteListItemStyle">
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <style name="StockListTheme">
+        <item name="android:background">@color/cardview_dark_background</item>
+    </style>
+</resources>
