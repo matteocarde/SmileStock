@@ -42,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements StockListFragment
         if (isDualView) {
             mDetailFragment = new StockDetailFragment();
 
+            if (getIntent() != null && getIntent().hasExtra("SYMBOL")) {
+                mDetailFragment.setArguments(getIntent().getExtras());
+            }
+
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.stock_detail_tablet_fragment, mDetailFragment)
@@ -106,6 +110,21 @@ public class MainActivity extends AppCompatActivity implements StockListFragment
         }
     }
 
+    public void replaceFragment(String symbol) {
+        StockDetailFragment newFragment = new StockDetailFragment();
+
+        Bundle args = new Bundle();
+        args.putString("SYMBOL", symbol);
+        newFragment.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.stock_detail_tablet_fragment, newFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+    }
+
     @Override
     public void onStockClick(String symbol) {
         if (!isDualView) {
@@ -114,19 +133,12 @@ public class MainActivity extends AppCompatActivity implements StockListFragment
 
             startActivity(intent);
         } else {
-            Timber.d("onStockClick " + symbol);
-            StockDetailFragment newFragment = new StockDetailFragment();
-
-            Bundle args = new Bundle();
-            args.putString("SYMBOL", symbol);
-            newFragment.setArguments(args);
-
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.stock_detail_tablet_fragment, newFragment);
-            transaction.addToBackStack(null);
-
-            // Commit the transaction
-            transaction.commit();
+            replaceFragment(symbol);
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
     }
 }

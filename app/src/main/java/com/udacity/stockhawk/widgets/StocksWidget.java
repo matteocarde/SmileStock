@@ -10,6 +10,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
 import com.udacity.stockhawk.R;
+import com.udacity.stockhawk.ui.MainActivity;
 import com.udacity.stockhawk.ui.StockDetailActivity;
 
 /**
@@ -26,8 +27,15 @@ public class StocksWidget extends AppWidgetProvider {
             Intent intent = new Intent(context, StocksWidgetRemoteViewsService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
 
+            Class destinationClass;
+            if (context.getResources().getBoolean(R.bool.is_dual_pane)) {
+                destinationClass = MainActivity.class;
+            } else {
+                destinationClass = StockDetailActivity.class;
+            }
+
             PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
-                    .addNextIntentWithParentStack(new Intent(context, StockDetailActivity.class))
+                    .addNextIntentWithParentStack(new Intent(context, destinationClass))
                     .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
             remoteView.setPendingIntentTemplate(R.id.widget_stocks_listview, clickPendingIntentTemplate);

@@ -16,6 +16,7 @@ import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.adapters.StockAdapter;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.ui.MainActivity;
 import com.udacity.stockhawk.ui.StockDetailActivity;
 
 import org.json.JSONObject;
@@ -108,7 +109,9 @@ public class StocksWidgetRemoteViewsService extends RemoteViewsService {
                     views.setTextViewText(R.id.widget_item_change, percentage);
                 }
 
-                Intent fillInIntent = new Intent(getApplicationContext(), StockDetailActivity.class);
+                Class destinationClass = context.getResources().getBoolean(R.bool.is_dual_pane) ? MainActivity.class : StockDetailActivity.class;
+
+                Intent fillInIntent = new Intent(getApplicationContext(), destinationClass);
 
                 fillInIntent.putExtra("SYMBOL", symbol);
 
